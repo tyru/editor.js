@@ -2,6 +2,35 @@
     var NORMAL_MODE = 0,
         INSERT_MODE = 1;
 
+    var JP_NONALPHA_KEY_TABLE = {
+        "1": "!",
+        "2": '"',
+        "3": "#",
+        "4": "$",
+        "5": "%",
+        "6": "&",
+        "7": "'",
+        "8": "(",
+        "9": ")",
+        "-": "=",
+        "^": "~",
+        /* "\\": "|", */
+        "@": "`",
+        "[": "{",
+        "]": "}",
+        ";": "+",
+        ":": "*",
+        ",": "<",
+        ".": ">",
+        "/": "?",
+        "\\": "_",
+    };
+
+
+    function isAlpha(c) {
+        return c.match(/^[a-zA-Z]$/);
+    }
+
     var Commands, Editor, UI;
 
 
@@ -211,16 +240,24 @@
         setModeString: function (mode) {
             $('mode').innerHTML = this.getModeString(mode);
         },
-        getKeyChar: function (event) {
+        getKeyCharJp: function (event) {
             if (!event.keyCode)
                 return null;
             var keyChar = String.fromCharCode(event.keyCode);
-            keyChar = event.shiftKey ? keyChar.toUpperCase() : keyChar.toLowerCase();
+            if (event.shiftKey) {
+                if (!isAlpha(keyChar)) {
+                    keyChar = JP_NONALPHA_KEY_TABLE[keyChar] || keyChar;
+                }
+            }
+            else {
+                if (isAlpha(keyChar))
+                    keyChar = keyChar.toLowerCase();
+            }
             return keyChar;
         },
         dispatchKey: function (event) {
             event = event || window.event;
-            var char = this.getKeyChar(event);
+            var char = this.getKeyCharJp(event);
             if (typeof(char) !== typeof("")) {
                 alert("error: invalid key char.");
                 return;
