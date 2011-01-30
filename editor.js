@@ -24,34 +24,39 @@
         },
 
         moveDown: function (info) {
-            console.log("down");
+            Editor.setLineNum(Editor.getLineNum() + 1);
         },
         moveUp: function (info) {
-            console.log("up");
+            Editor.setLineNum(Editor.getLineNum() - 1);
         },
         moveLeft: function (info) {
-            console.log("left");
+            Editor.setColumn(Editor.getColumn() - 1);
         },
         moveRight: function (info) {
-            console.log("right");
+            Editor.setColumn(Editor.getColumn() + 1);
         },
         moveLeftMost: function (info) {
-            console.log("left most");
+            Editor.setColumn(1);
         },
         moveRightMost: function (info) {
-            console.log("right most");
+            Editor.setColumn(Editor.getMaxColumn());
         },
 
         /* INSERT_MODE */
         escapeToNormal: function (info) {
             Editor.setMode(NORMAL_MODE);
+            Editor.setColumn(Editor.getColumn() - 1);
         },
         selfInsert: function (info) {
             /* TODO: Gap Buffer */
             var line = Editor.getCurrentLine();
             var col = Editor.getColumn();
+            console.log("inserting '" + info.char + "' at (" + Editor.getColumn() + ", " + Editor.getLineNum() + ")");
+            console.log(uneval([line.substr(0, col - 1), info.char, line.substr(col - 1)]));
             line = line.substr(0, col - 1) + info.char + line.substr(col - 1);
             Editor.setCurrentLine(line);
+
+            Editor.setColumn(col + 1); // advance column
         },
     };
 
@@ -87,18 +92,42 @@
         })(),
 
 
+        getAllLines: function () {
+            return $F('buffer').split("\n");
+        },
         getColumn: function () {
             return this.col;
+        },
+        getMaxColumn: function () {
+            return this.getCurrentLine().length + 1;
+        },
+        setColumn: function (col) {
+            if (1 <= col && col < this.getMaxColumn()) {
+                this.col = col;
+            }
+            else {
+                console.log("invalid column number: " + col);
+            }
         },
         getLineNum: function () {
             return this.lnum;
         },
+        getMaxLineNum: function () {
+            return this.getAllLines().length;
+        },
+        setLineNum: function (lnum) {
+            if (1 <= lnum && lnum < this.getMaxLineNum()) {
+                this.lnum = lnum;
+            }
+            else {
+                console.log("invalid line number: " + lnum);
+            }
+        },
         getCurrentLine: function () {
-            var text = $F('buffer');
-            return text.split("\n")[this.lnum - 1];
+            return this.getAllLines()[this.lnum - 1];
         },
         setCurrentLine: function (line) {
-            var lines = $F('buffer').split("\n");
+            var lines = this.getAllLines();
             lines[this.lnum - 1] = line;
             $('buffer').value = lines.join("\n");
         },
