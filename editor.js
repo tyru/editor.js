@@ -2,7 +2,10 @@
     var NORMAL_MODE = 0,
         INSERT_MODE = 1;
 
-    var Commands = {
+    var Commands, Editor, UI;
+
+
+    Commands = {
         insertLeft: function (info) {
             Editor.setMode(INSERT_MODE);
         },
@@ -43,7 +46,7 @@
         },
     };
 
-    var Editor = {
+    Editor = {
         mode: NORMAL_MODE,
         modeStringTable: (function () {
             var _ = {};
@@ -100,31 +103,35 @@
     };
 
 
-    function getKeyChar(event) {
-        if (!event.keyCode)
-            return null;
-        var keyChar = String.fromCharCode(event.keyCode);
-        keyChar = event.shiftKey ? keyChar.toUpperCase() : keyChar.toLowerCase();
-        return keyChar;
-    }
-    function dispatchKey(event) {
-        event = event || window.event;
-        var char = getKeyChar(event);
-        if (typeof(char) !== typeof("")) {
-            console.log("error: invalid key char.");
-            return;
-        }
-        console.log("input: " + uneval(char));
-        Editor.dispatchKey(char, event);
-    }
-    function onLoad() {
-        if (!Prototype.Browser.Gecko) {
-            alert("your browser is not supported yet!");
-            return;
-        }
-        console.log("loading...");
-        Event.observe(window, 'keydown', dispatchKey);
-        $('mode').innerHTML = Editor.getModeString();
-    }
-    Event.observe(window, 'load', onLoad);
+    UI = {
+        getKeyChar: function (event) {
+            if (!event.keyCode)
+                return null;
+            var keyChar = String.fromCharCode(event.keyCode);
+            keyChar = event.shiftKey ? keyChar.toUpperCase() : keyChar.toLowerCase();
+            return keyChar;
+        },
+        dispatchKey: function (event) {
+            event = event || window.event;
+            var char = this.getKeyChar(event);
+            if (typeof(char) !== typeof("")) {
+                console.log("error: invalid key char.");
+                return;
+            }
+            console.log("input: " + uneval(char));
+            Editor.dispatchKey(char, event);
+        },
+        onLoad: function () {
+            if (!Prototype.Browser.Gecko) {
+                alert("your browser is not supported yet!");
+                return;
+            }
+            console.log("loading...");
+            Event.observe(window, 'keydown', this.dispatchKey.bind(this));
+            $('mode').innerHTML = Editor.getModeString();
+        },
+    };
+
+
+    Event.observe(window, 'load', UI.onLoad.bind(UI));
 })();
