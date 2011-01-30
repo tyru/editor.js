@@ -48,12 +48,6 @@
 
     Editor = {
         mode: NORMAL_MODE,
-        modeStringTable: (function () {
-            var _ = {};
-            _[NORMAL_MODE] = "NORMAL";
-            _[INSERT_MODE] = "INSERT";
-            return _;
-        })(),
         keyTable: (function () {
             var _ = {};
             _[NORMAL_MODE] = {
@@ -82,6 +76,9 @@
         })(),
 
 
+        getMode: function () {
+            return this.mode;
+        },
         dispatchKey: function (char, event) {
             var info = {
                 'char': char,
@@ -93,17 +90,27 @@
             else
                 this.defaultKeyTable[this.mode](info);
         },
-        getModeString: function () {
-            return this.modeStringTable[this.mode] || "(unknown)";
-        },
         setMode: function (mode) {
             this.mode = mode;
-            $('mode').innerHTML = this.getModeString();
+            UI.setModeString(this.mode);
         },
     };
 
 
     UI = {
+        modeStringTable: (function () {
+            var _ = {};
+            _[NORMAL_MODE] = "NORMAL";
+            _[INSERT_MODE] = "INSERT";
+            return _;
+        })(),
+
+        getModeString: function (mode) {
+            return this.modeStringTable[mode] || "(unknown)";
+        },
+        setModeString: function (mode) {
+            $('mode').innerHTML = this.getModeString(mode);
+        },
         getKeyChar: function (event) {
             if (!event.keyCode)
                 return null;
@@ -128,7 +135,7 @@
             }
             console.log("loading...");
             Event.observe(window, 'keydown', this.dispatchKey.bind(this));
-            $('mode').innerHTML = Editor.getModeString();
+            this.setModeString(Editor.getMode());
         },
     };
 
