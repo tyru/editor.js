@@ -18,7 +18,7 @@
         var NORMAL_MODE = 0,
             INSERT_MODE = 1;
 
-        var Editor = {
+        return {
             mode: NORMAL_MODE,
             modeStringTable: (function () {
                 var _ = {};
@@ -42,19 +42,23 @@
                 return this.modeStringTable[this.mode] || "(unknown)";
             },
 
-            keyTable: {},
-            defaultKeyTable: {},
+            keyTable: (function () {
+                var _ = {};
+                _[NORMAL_MODE] = {
+                    'j': Commands.moveDown,
+                    'k': Commands.moveUp,
+                    'h': Commands.moveLeft,
+                    'l': Commands.moveRight,
+                };
+                return _;
+            })(),
+            defaultKeyTable: (function () {
+                var _ = {};
+                _[NORMAL_MODE] =
+                    function (info) { /* ignore */ };
+                return _;
+            })(),
         };
-        Editor.keyTable[NORMAL_MODE] = {
-            'j': Commands.moveDown,
-            'k': Commands.moveUp,
-            'h': Commands.moveLeft,
-            'l': Commands.moveRight,
-        };
-        Editor.defaultKeyTable[NORMAL_MODE] =
-            function (info) { /* ignore */ };
-
-        return Editor;
     })();
 
 
