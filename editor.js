@@ -20,6 +20,13 @@
 
         var Editor = {
             mode: NORMAL_MODE,
+            modeStringTable: (function () {
+                var _ = {};
+                _[NORMAL_MODE] = "NORMAL";
+                _[INSERT_MODE] = "INSERT";
+                return _;
+            })(),
+
             dispatchKey: function (char, event) {
                 var info = {
                     'char': char,
@@ -31,6 +38,10 @@
                 else
                     this.defaultKeyTable[this.mode](info);
             },
+            getModeString: function () {
+                return this.modeStringTable[this.mode] || "(unknown)";
+            },
+
             keyTable: {},
             defaultKeyTable: {},
         };
@@ -70,7 +81,8 @@
             return;
         }
         console.log("loading...");
-        Event.observe('editor', 'keydown', dispatchKey);
+        Event.observe(window, 'keydown', dispatchKey);
+        $('mode').innerHTML = Editor.getModeString();
     }
     Event.observe(window, 'load', onLoad);
 })();
