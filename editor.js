@@ -39,8 +39,18 @@
             Editor.setColumn(1);
         },
         moveRightMost: function (info) {
-            // XXX
-            Editor.setColumn(Editor.getMaxColumn());
+            switch (Editor.getMode()) {
+            case NORMAL_MODE:
+                // NORMAL_MODE can't go to the max column.
+                Editor.setColumn(Editor.getMaxColumn() - 1);
+                break;
+            case INSERT_MODE:
+                Editor.setColumn(Editor.getMaxColumn());
+                break;
+            default:
+                alert("error: Commands.moveRightMost() was called from mode " + UI.getModeString(Editor.getMode()) + ".");
+                break;
+            }
         },
 
         /* INSERT_MODE */
