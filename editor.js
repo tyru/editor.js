@@ -1,5 +1,24 @@
 (function () {
+    var NORMAL_MODE = 0,
+        INSERT_MODE = 1;
+
     var Commands = {
+        insertLeft: function (info) {
+            Editor.setMode(INSERT_MODE);
+        },
+        insertLeftMost: function (info) {
+            Editor.setMode(INSERT_MODE);
+            this.moveLeftMost();
+        },
+        insertRight: function (info) {
+            Editor.setMode(INSERT_MODE);
+            this.moveRight();
+        },
+        insertRightMost: function (info) {
+            Editor.setMode(INSERT_MODE);
+            this.moveRightMost();
+        },
+
         moveDown: function (info) {
             console.log("down");
         },
@@ -12,54 +31,73 @@
         moveRight: function (info) {
             console.log("right");
         },
+        moveLeftMost: function (info) {
+            console.log("left most");
+        },
+        moveRightMost: function (info) {
+            console.log("right most");
+        },
+
+        escapeToNormal: function (info) {
+            Editor.setMode(NORMAL_MODE);
+        },
     };
 
-    var Editor = (function () {
-        var NORMAL_MODE = 0,
-            INSERT_MODE = 1;
+    var Editor = {
+        mode: NORMAL_MODE,
+        modeStringTable: (function () {
+            var _ = {};
+            _[NORMAL_MODE] = "NORMAL";
+            _[INSERT_MODE] = "INSERT";
+            return _;
+        })(),
+        keyTable: (function () {
+            var _ = {};
+            _[NORMAL_MODE] = {
+                'i': Commands.insertLeft,
+                'I': Commands.insertLeftMost,
+                'a': Commands.insertRight,
+                'A': Commands.insertRightMost,
 
-        return {
-            mode: NORMAL_MODE,
-            modeStringTable: (function () {
-                var _ = {};
-                _[NORMAL_MODE] = "NORMAL";
-                _[INSERT_MODE] = "INSERT";
-                return _;
-            })(),
+                'j': Commands.moveDown,
+                'k': Commands.moveUp,
+                'h': Commands.moveLeft,
+                'l': Commands.moveRight,
+                '0': Commands.moveLeftMost,
+                '$': Commands.moveRightMost,
+            };
+            _[INSERT_MODE] = {
+                "\x1B" /* ESC */ : Commands.escapeToNormal,
+            };
+            return _;
+        })(),
+        defaultKeyTable: (function () {
+            var _ = {};
+            _[NORMAL_MODE] =
+                function (info) { /* ignore */ };
+            return _;
+        })(),
 
-            dispatchKey: function (char, event) {
-                var info = {
-                    'char': char,
-                    'event': event,
-                    'mode': this.mode,
-                };
-                if (this.keyTable[this.mode][char])
-                    this.keyTable[this.mode][char](info);
-                else
-                    this.defaultKeyTable[this.mode](info);
-            },
-            getModeString: function () {
-                return this.modeStringTable[this.mode] || "(unknown)";
-            },
 
-            keyTable: (function () {
-                var _ = {};
-                _[NORMAL_MODE] = {
-                    'j': Commands.moveDown,
-                    'k': Commands.moveUp,
-                    'h': Commands.moveLeft,
-                    'l': Commands.moveRight,
-                };
-                return _;
-            })(),
-            defaultKeyTable: (function () {
-                var _ = {};
-                _[NORMAL_MODE] =
-                    function (info) { /* ignore */ };
-                return _;
-            })(),
-        };
-    })();
+        dispatchKey: function (char, event) {
+            var info = {
+                'char': char,
+                'event': event,
+                'mode': this.mode,
+            };
+            if (this.keyTable[this.mode][char])
+                this.keyTable[this.mode][char](info);
+            else
+                this.defaultKeyTable[this.mode](info);
+        },
+        getModeString: function () {
+            return this.modeStringTable[this.mode] || "(unknown)";
+        },
+        setMode: function (mode) {
+            this.mode = mode;
+            $('mode').innerHTML = this.getModeString();
+        },
+    };
 
 
     function getKeyChar(event) {
