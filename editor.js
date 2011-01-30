@@ -52,8 +52,7 @@
             /* TODO: Gap Buffer */
             var line = Editor.getCurrentLine();
             var col = Editor.getColumn();
-            console.log("backspace: remove '" + line[col - 1] + "' at (" + Editor.getColumn() + ", " + Editor.getLineNum() + ")");
-            console.log(uneval([line.substr(0, col - 1), line.substr(col - 1)]));
+            console.log("backspace: remove '" + line[col - 2] + "' at (" + col - 2 + ", " + Editor.getLineNum() + ")");
             line = line.substr(0, col - 2) + line.substr(col - 1);
             Editor.setCurrentLine(line);
 
@@ -63,8 +62,7 @@
             /* TODO: Gap Buffer */
             var line = Editor.getCurrentLine();
             var col = Editor.getColumn();
-            console.log("inserting '" + info.char + "' at (" + Editor.getColumn() + ", " + Editor.getLineNum() + ")");
-            console.log(uneval([line.substr(0, col - 1), info.char, line.substr(col - 1)]));
+            console.log("inserting '" + info.char + "' at (" + col + ", " + Editor.getLineNum() + ")");
             line = line.substr(0, col - 1) + info.char + line.substr(col - 1);
             Editor.setCurrentLine(line);
 
