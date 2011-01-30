@@ -131,6 +131,7 @@
             _[INSERT_MODE] = {
                 "\x1B" /* ESC */ : Commands.escapeToNormal,
                 "\b" /* BS */ : Commands.insertBackspace,
+                "\x11" /* CTRL-H */ : Commands.insertBackspace,
             };
             return _;
         })(),
