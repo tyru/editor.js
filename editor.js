@@ -128,7 +128,7 @@
                 this.col = col;
             }
             else {
-                console.log("invalid column number: " + col);
+                alert("invalid column number: " + col);
             }
         },
         incrementColumn: function () {
@@ -154,7 +154,7 @@
                 this.lnum = lnum;
             }
             else {
-                console.log("invalid line number: " + lnum);
+                alert("invalid line number: " + lnum);
             }
         },
         incrementLineNum: function () {
@@ -222,7 +222,7 @@
             event = event || window.event;
             var char = this.getKeyChar(event);
             if (typeof(char) !== typeof("")) {
-                console.log("error: invalid key char.");
+                alert("error: invalid key char.");
                 return;
             }
             console.log("input: " + uneval(char));
