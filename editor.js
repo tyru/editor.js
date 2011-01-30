@@ -12,15 +12,15 @@
         },
         insertLeftMost: function (info) {
             Editor.setMode(INSERT_MODE);
-            this.moveLeftMost();
+            Commands.moveLeftMost();
         },
         insertRight: function (info) {
             Editor.setMode(INSERT_MODE);
-            this.moveRight();
+            Commands.moveRight();
         },
         insertRightMost: function (info) {
             Editor.setMode(INSERT_MODE);
-            this.moveRightMost();
+            Commands.moveRightMost();
         },
 
         moveDown: function (info) {
