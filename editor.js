@@ -48,6 +48,17 @@
             Editor.setMode(NORMAL_MODE);
             Editor.decrementColumn();
         },
+        insertBackspace: function (info) {
+            /* TODO: Gap Buffer */
+            var line = Editor.getCurrentLine();
+            var col = Editor.getColumn();
+            console.log("backspace: remove '" + line[col - 1] + "' at (" + Editor.getColumn() + ", " + Editor.getLineNum() + ")");
+            console.log(uneval([line.substr(0, col - 1), line.substr(col - 1)]));
+            line = line.substr(0, col - 2) + line.substr(col - 1);
+            Editor.setCurrentLine(line);
+
+            Editor.decrementColumn();
+        },
         selfInsert: function (info) {
             /* TODO: Gap Buffer */
             var line = Editor.getCurrentLine();
@@ -82,6 +93,7 @@
             };
             _[INSERT_MODE] = {
                 "\x1B" /* ESC */ : Commands.escapeToNormal,
+                "\b" /* BS */ : Commands.insertBackspace,
             };
             return _;
         })(),
