@@ -24,28 +24,29 @@
         },
 
         moveDown: function (info) {
-            Editor.setLineNum(Editor.getLineNum() + 1);
+            Editor.incrementLineNum();
         },
         moveUp: function (info) {
-            Editor.setLineNum(Editor.getLineNum() - 1);
+            Editor.decrementLineNum();
         },
         moveLeft: function (info) {
-            Editor.setColumn(Editor.getColumn() - 1);
+            Editor.decrementColumn();
         },
         moveRight: function (info) {
-            Editor.setColumn(Editor.getColumn() + 1);
+            Editor.incrementColumn();
         },
         moveLeftMost: function (info) {
             Editor.setColumn(1);
         },
         moveRightMost: function (info) {
+            // XXX
             Editor.setColumn(Editor.getMaxColumn());
         },
 
         /* INSERT_MODE */
         escapeToNormal: function (info) {
             Editor.setMode(NORMAL_MODE);
-            Editor.setColumn(Editor.getColumn() - 1);
+            Editor.decrementColumn();
         },
         selfInsert: function (info) {
             /* TODO: Gap Buffer */
@@ -56,7 +57,7 @@
             line = line.substr(0, col - 1) + info.char + line.substr(col - 1);
             Editor.setCurrentLine(line);
 
-            Editor.setColumn(col + 1); // advance column
+            Editor.incrementColumn();
         },
     };
 
@@ -102,13 +103,25 @@
             return this.getCurrentLine().length + 1;
         },
         setColumn: function (col) {
-            if (1 <= col && col < this.getMaxColumn()) {
+            // [1, this.getMaxColumn()]
+            if (1 <= col && col <= this.getMaxColumn()) {
                 this.col = col;
             }
             else {
                 console.log("invalid column number: " + col);
             }
         },
+        incrementColumn: function () {
+            // Do not show error if there is no more space at right.
+            if (this.col < this.getMaxColumn())
+                Editor.setColumn(this.col + 1);
+        },
+        decrementColumn: function () {
+            // Do not show error if there is no more space at left.
+            if (this.col > 1)
+                Editor.setColumn(this.col - 1);
+        },
+
         getLineNum: function () {
             return this.lnum;
         },
@@ -116,13 +129,25 @@
             return this.getAllLines().length;
         },
         setLineNum: function (lnum) {
-            if (1 <= lnum && lnum < this.getMaxLineNum()) {
+            // [1, this.getMaxLineNum()]
+            if (1 <= lnum && lnum <= this.getMaxLineNum()) {
                 this.lnum = lnum;
             }
             else {
                 console.log("invalid line number: " + lnum);
             }
         },
+        incrementLineNum: function () {
+            // Do not show error if there is no more line below.
+            if (this.lnum < this.getMaxLineNum())
+                Editor.setLineNum(this.lnum + 1);
+        },
+        decrementLineNum: function () {
+            // Do not show error if there is no more line above.
+            if (this.lnum > 1)
+                Editor.setLineNum(this.lnum - 1);
+        },
+
         getCurrentLine: function () {
             return this.getAllLines()[this.lnum - 1];
         },
