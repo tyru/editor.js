@@ -6,6 +6,7 @@
 
 
     Commands = {
+        /* NORMAL_MODE */
         insertLeft: function (info) {
             Editor.setMode(INSERT_MODE);
         },
@@ -41,13 +42,23 @@
             console.log("right most");
         },
 
+        /* INSERT_MODE */
         escapeToNormal: function (info) {
             Editor.setMode(NORMAL_MODE);
+        },
+        selfInsert: function (info) {
+            /* TODO: Gap Buffer */
+            var line = Editor.getCurrentLine();
+            var col = Editor.getColumn();
+            line = line.substr(0, col - 1) + info.char + line.substr(col - 1);
+            Editor.setCurrentLine(line);
         },
     };
 
     Editor = {
         mode: NORMAL_MODE,
+        col: 1,
+        lnum: 1,
         keyTable: (function () {
             var _ = {};
             _[NORMAL_MODE] = {
@@ -70,12 +81,27 @@
         })(),
         defaultKeyTable: (function () {
             var _ = {};
-            _[NORMAL_MODE] =
-                function (info) { /* ignore */ };
+            _[NORMAL_MODE] = function (info) { /* ignore */ };
+            _[INSERT_MODE] = Commands.selfInsert;
             return _;
         })(),
 
 
+        getColumn: function () {
+            return this.col;
+        },
+        getLineNum: function () {
+            return this.lnum;
+        },
+        getCurrentLine: function () {
+            var text = $F('buffer');
+            return text.split("\n")[this.lnum - 1];
+        },
+        setCurrentLine: function (line) {
+            var lines = $F('buffer').split("\n");
+            lines[this.lnum - 1] = line;
+            $('buffer').value = lines.join("\n");
+        },
         getMode: function () {
             return this.mode;
         },
